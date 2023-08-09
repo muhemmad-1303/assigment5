@@ -1,24 +1,14 @@
 <?php
-$host='localhost';
-$user='root';
-$password='';
-$dbname='todo';
+include 'database.php';
+$statement = $pdo->prepare('SELECT *FROM task ORDER BY complete ASC;');
+$statement->execute();
+$result=$statement->fetchAll(PDO::FETCH_ASSOC);
 
-$conn=new mysqli($host,$user,$password,$dbname);
-
-if($conn->connect_error){
-    die("connection error");
+foreach ($result as $key){
+    $data[]=$key;
 }
+$response=$data;
 
-$sql='SELECT *
-FROM task
-ORDER BY complete ASC;';
-$result=$conn->query($sql);
 
-$data=array();
-while($row=$result->fetch_assoc()){
-     $data[]=$row;
-}
-$conn->close();
 header('Content-Type: application/json');
-echo json_encode($data);
+echo json_encode($response);

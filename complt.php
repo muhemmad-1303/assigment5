@@ -1,38 +1,32 @@
 <?php
-$host='localhost';
-$user='root';
-$password='';
-$dbname='todo';
+include "database.php";
 
-$conn=new mysqli($host,$user,$password,$dbname);
 
-if($conn->connect_error){
-    die("connection error");
-}
 $jsonData = file_get_contents('php://input');
 $data = json_decode($jsonData, true); 
 $id=$data['id'];
+$stage=$data['stage'];
 
 
+if($stage=='complete'){   
+
+    $statement=$pdo->prepare("UPDATE task SET  complete='1' WHERE id ='$id' ");
+    $statement->execute();
+
+  
+}
+else{
+    $statement=$pdo->prepare("UPDATE task SET  complete='0' WHERE id ='$id' ");
+    $statement->execute();
     
-$sql="UPDATE task SET  complete='1' WHERE id ='$id' ";
-$conn->query($sql);
-
-    
+}    
 function val($data){
     $data=trim($data);
     $data=stripslashes($data);
     $data=htmlspecialchars($data);
     return $data;
  }
-// Decode JSON data as an associative array
- 
- // Now you can use $data to access the sent data
- 
- 
- // Process the data and send a response
- $response = $data;
- 
- // Send JSON response
+
+$response="success";
  header('Content-Type: application/json');
- echo json_encode($response);
+ echo json_encode('$response');

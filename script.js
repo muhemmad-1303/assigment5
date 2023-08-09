@@ -1,40 +1,32 @@
 document.addEventListener('DOMContentLoaded',fetchtask);
 const task=document.getElementById('task');
 const addTask=document.getElementById('addbtn');
-const head=document.querySelector('.todocardhead')
+const head=document.querySelector('.todocardhead');
+const modal=document.querySelector('.modal')
 
 addTask.addEventListener('click',add);
-
-
-
-
-
-function fetchtask(data){
-    let flag=data.message;
-   
+function fetchtask(item){
+  let flag=item.message;
    if(flag=='post'){
     toastr.success('task added successfully!', 'Success');
    }
-  
-     
     const parentdiv=document.querySelector('.todocardbody');
+    parentdiv.innerHTML=" "; 
     fetch('display.php')
-    .then(response => response.json())
+    .then((response) => {
+      console.log(response)
+      return response.json()})
     .then(data => {
-        
-        data.forEach(item => {
+        data.forEach((item) => { 
             const itemDiv = document.createElement('div');
             const itemtext= document.createElement('span');
             const items=document.createElement('div');
-
             itemtext.textContent = `${item.task}`; 
             itemtext.id=item.id; 
             itemDiv.classList.add('color');
             parentdiv.appendChild(itemDiv);
             itemDiv.appendChild(itemtext);
             itemDiv.appendChild(items);
-          
-            if(item.complete==0){
             const nwItem=document.createElement('button');
             nwItem.textContent='✏️';
             nwItem.classList.add('spanbox');
@@ -49,31 +41,43 @@ function fetchtask(data){
             cmplt.textContent='✔️'
             cmplt.classList.add('cmpltbox');
             cmplt.id=item.id
-            items.appendChild(cmplt);  }
-            else{
-                let text=itemtext.textContent
-                itemDiv.textcontent=text;
-                itemDiv.style.textDecoration='line-through';
-            }
-
-
-        });
+            items.appendChild(cmplt);  
+          if(item.complete==1){
+            itemtext.style.textDecoration='line-through';
+            nwItem.parentNode.innerHTML=" ";
+            const undo=document.createElement('button');
+            undo.id=item.id
+            undo.textContent='\u{21BA}';
+            items.appendChild(undo);
+            undo.addEventListener('click',function(){
+              handlecmplt(this.id,"undo")
+            })
+            const nwdlt=document.createElement('button');
+            nwdlt.textContent='🗑️'
+            nwdlt.classList.add('dltbox');
+            nwdlt.id=item.id
+            items.appendChild(nwdlt);  
+            
+          }
+        
+          });
         const editbtn=document.querySelectorAll('.spanbox');
         editbtn.forEach((btn)=>{
-            btn.addEventListener('mouseup',function(){
+            btn.addEventListener('click',function(){
                 handleedit(this.id);
             });
         })
         const dltbtn=document.querySelectorAll('.dltbox');
         dltbtn.forEach((btn)=>{
-            btn.addEventListener('mouseup',function(){
-                handledlt(this.id);
+            btn.addEventListener('click',function(){
+                 modaldlt(this.id);
+
             });
         })
         const cmpltbtn=document.querySelectorAll('.cmpltbox');
         cmpltbtn.forEach((btn)=>{
             btn.addEventListener('mouseup',function(){
-                handlecmplt(this.id);
+                handlecmplt(this.id,"complete");
             });
         })
     
@@ -84,15 +88,16 @@ function fetchtask(data){
 
 }
 function handleedit(idn){
-      head.innerHTML= ' ';
-  
       const inputelement=document.createElement('input');
       inputelement.id='editinput';
       inputelement.value=document.getElementById(idn).textContent;
       const nwbtn=document.createElement('div');
       nwbtn.id="edit";
-      nwbtn.textContent="save";
-      head.append(inputelement,nwbtn);
+      nwbtn.textContent='save';
+      const parentelmt=document.getElementById(idn).parentNode;
+      parentelmt.id=idn;
+      parentelmt.innerHTML=" ";
+      parentelmt.append(inputelement,nwbtn)
       const updatedData = {
         id: idn
       };
@@ -104,7 +109,7 @@ function handleedit(idn){
     }
 
  function update(updatedData,inputelement){
-
+    
     let taskvalue=inputelement.value;
     const obj={...updatedData,task:taskvalue}
     fetch('update.php', {
@@ -117,25 +122,20 @@ function handleedit(idn){
       .then(response => response.json())
       .then(data => {
         toastr.success('task updated successfully!', 'Success');
-        document.querySelector('.todocardbody').innerHTML='';
-        head.innerHTML="<form id='form'><input type='text' name='task' id='task' placeholder='ADD NEW TASK'><div id='save'><input type='submit' value='AddTask' id='addbtn'></div> </form>"
         let m={meegae:"m",};
         fetchtask(m);
         
       })
-      
+        }  
 
-
-
- }  
-
- function handledlt(idn){
-   const data={
+ function handledlt(idn){  
+  modal.classList.toggle('modalHidden');
+    data={
     id:idn
    }
    console.log(data)
    fetch('delete.php', {
-    method: 'DELETE',
+    method:'DELETE',
     headers: {
       'Content-Type': 'application/json'
     },
@@ -143,19 +143,18 @@ function handleedit(idn){
   })
   .then(response => response.json())
   .then(data => {
-    toastr.success('task deleted successfully!', 'Success');
     document.querySelector('.todocardbody').innerHTML='';
     let m={meegae:"m",};
     fetchtask(m);
+    toastr.success('task deleted successfully!', 'Success');
+   
+    
 
   })
   .catch(error => {
     // Handle errors
     console.error('Error:', error);
   });
-  
-   
-
  }
 
 function add(event){
@@ -180,14 +179,17 @@ function add(event){
       })
       task.value=" ";
       
+      
      
     
 }
 
 
-function handlecmplt(idn){
+function handlecmplt(idn,status){
+  
     const obj={
-        id:idn
+        id:idn,
+        stage:status
     }
     fetch('complt.php', {
         method: 'put',
@@ -201,12 +203,34 @@ function handlecmplt(idn){
         
         document.querySelector('.todocardbody').innerHTML='';
         let m={meegae:"m",};
-    fetchtask(m);
+        fetchtask(m);
 
        
         
       })    
    
+}
+
+function modaldlt(idn){
+  
+  const modalParent=document.querySelector('.buttons');
+  modalParent.innerHTML=" ";
+  const dltbtn=document.createElement('button');
+  dltbtn.id='delete';
+  dltbtn.textContent="delete";
+  const canclbtn=document.createElement('button');
+  canclbtn.id='cancel';
+  canclbtn.textContent="cancel";
+  modalParent.append(canclbtn,dltbtn)
+  modal.classList.toggle('modalHidden');
+  dltbtn.addEventListener('click',function(){
+      handledlt(idn);
+      
+  })
+  canclbtn.addEventListener('click',function(){
+    modal.classList.toggle('modalHidden');
+    
+})
 }
 
 

@@ -36,23 +36,24 @@
     
 }
 
-.todocard .todocardhead #editinput{
+#editinput{
     outline: 0;
-    border-radius: 20px;
-    width: 80%;
-    padding: 10px;
+    border-radius: 10px;
+    padding: 5px;
+    box-sizing: border-box;
     border: 0;
+    width:85%;
+    margin-right: 5px;
+}
+#edit{
+    background-color: white;
+    color: black;
+    padding: 3px;
+    border-radius: 10px;
+    width: fit-content !important;
 
 }
-.todocard .todocardhead #edit{
-    outline: 0;
-    border-radius: 20px;
-    width: 50px;
-    border: 0;
-    padding: 10px;
-    background-color: white;
-    text-align: center;
-}
+
 
 
 .todocard .todocardhead form{
@@ -112,7 +113,64 @@ div.color {
     display: flex;
     flex-direction: row;
     gap: 3px;
+    justify-content: flex-start;
+    
 }
 button{
     all: unset;
+}
+
+.modal{
+    position: absolute;
+    top: 0;
+    background-color: rgba(0,0,0,0.8);
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    width: 100%;
+    height: 100%;
+}
+.modal .modalContent{
+    width: 20%;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 2px 2px 1px;
+    margin-top: 200px;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    text-align: center;
+
+}
+.modalContent .text{
+    font-size: 25px;
+    font-weight: bold;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.modalContent .buttons{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.buttons #delete{
+    background-color: #F15A59;
+    color: white;
+    padding: 10px;
+    border-radius: 5px;
+
+}
+
+.buttons #cancel{
+    background-color: #A8A196;
+    color: white;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.modalHidden{
+    visibility:hidden;
 }

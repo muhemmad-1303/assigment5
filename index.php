@@ -21,7 +21,7 @@
         <div class="todocard">
             <div class="todocardhead">
                 <form id="form">
-                <input type="text" name="task" id="task" placeholder="ADD NEW TASK">
+                <input type="text" name="task" id="task" >
                 <div id="save">
                 <input type="submit" value="AddTask" id="addbtn">
                 </div>
@@ -30,6 +30,14 @@
             </div>
             <div class="todocardbody">
 
+            </div>
+        </div>
+    </div>
+    <div class="modal modalHidden">
+        <div class="modalContent">
+            <div class="text">Are you sure you want to delete</div>
+            <div class="buttons">
+               
             </div>
         </div>
     </div>

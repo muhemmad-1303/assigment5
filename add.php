@@ -1,21 +1,13 @@
 <?php
-$host='localhost';
-$user='root';
-$password='';
-$dbname='todo';
+include "database.php";
 
-$conn=new mysqli($host,$user,$password,$dbname);
-
-if($conn->connect_error){
-    die("connection error");
-}
 $jsonData = file_get_contents('php://input');
 $data = json_decode($jsonData, true); 
 $task=$data['task'];
 
     
-$sql="INSERT INTO task (task)VALUES('$task')";
-$conn->query($sql);
+$statement=$pdo->prepare("INSERT INTO task (task)VALUES('$task')");
+$statement->execute();
 
     
 function val($data){
