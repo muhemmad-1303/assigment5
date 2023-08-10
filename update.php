@@ -1,23 +1,13 @@
 <?php
-$host='localhost';
-$user='root';
-$password='';
-$dbname='todo';
-
-$conn=new mysqli($host,$user,$password,$dbname);
-
-if($conn->connect_error){
-    die("connection error");
-}
+include 'database.php';
 $jsonData = file_get_contents('php://input');
 $data = json_decode($jsonData, true); 
 $task=$data['task'];
 $id=$data['id'];
+$statement=$pdo->prepare("UPDATE task SET  task='$task' WHERE id ='$id' ");
+$statement->execute();
 
 
-    
-$sql="UPDATE task SET  task='$task' WHERE id ='$id' ";
-$conn->query($sql);
 
     
 function val($data){
@@ -26,14 +16,9 @@ function val($data){
     $data=htmlspecialchars($data);
     return $data;
  }
-// Decode JSON data as an associative array
+
+ $response = "success";
  
- // Now you can use $data to access the sent data
- 
- 
- // Process the data and send a response
- $response = $data;
- 
- // Send JSON response
+
  header('Content-Type: application/json');
  echo json_encode($response);
